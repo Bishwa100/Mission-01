@@ -246,6 +246,7 @@ body {
 
 .tabs-list {
   display: flex;
+  flex-wrap: wrap;
   gap: 8px;
   overflow-x: auto;
   padding-bottom: 8px;
@@ -274,12 +275,34 @@ body {
   color: #818cf8;
 }
 
+.tab-button.empty {
+  opacity: 0.6;
+}
+
+.tab-button.empty:hover {
+  opacity: 0.8;
+}
+
 .tab-count {
   background: rgba(99, 102, 241, 0.3);
   padding: 2px 8px;
   border-radius: 10px;
   font-size: 0.8rem;
   margin-left: 8px;
+}
+
+.tab-count.zero {
+  background: rgba(100, 100, 100, 0.3);
+  color: #666;
+}
+
+.no-results-tab {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 40px 20px;
+  color: #6b6b80;
+  background: #1a1a25;
+  border-radius: 12px;
 }
 
 /* Result cards */

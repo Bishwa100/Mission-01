@@ -1,6 +1,20 @@
 import { useState } from 'react'
 import ResultCard from './ResultCard'
 
+// Tab order matching the spec - ALL platforms visible
+const TAB_ORDER = [
+  'youtube',
+  'linkedin',
+  'blogs',
+  'reddit',
+  'events',
+  'facebook',
+  'instagram',
+  'twitter',
+  'quora',
+  'github',
+]
+
 const TAB_CONFIG = {
   youtube: { label: 'YouTube', icon: '🎥' },
   github: { label: 'GitHub', icon: '🐙' },
@@ -15,13 +29,16 @@ const TAB_CONFIG = {
 }
 
 export default function ResultTabs({ results }) {
-  const availableTabs = Object.keys(results).filter(
-    key => results[key] && results[key].length > 0
-  )
+  // Show ALL tabs in defined order, not just ones with results
+  const allTabs = TAB_ORDER.filter(key => key in TAB_CONFIG)
 
-  const [activeTab, setActiveTab] = useState(availableTabs[0] || 'youtube')
+  // Find first tab with results for default selection
+  const firstWithResults = allTabs.find(key => results[key]?.length > 0)
+  const [activeTab, setActiveTab] = useState(firstWithResults || 'youtube')
 
-  if (availableTabs.length === 0) {
+  const totalResults = Object.values(results).reduce((sum, arr) => sum + (arr?.length || 0), 0)
+
+  if (totalResults === 0) {
     return (
       <div className="empty-state">
         <div className="empty-icon">🔍</div>
@@ -35,27 +52,34 @@ export default function ResultTabs({ results }) {
   return (
     <div className="tabs-container">
       <div className="tabs-list">
-        {availableTabs.map(tabKey => {
-          const config = TAB_CONFIG[tabKey] || { label: tabKey, icon: '📄' }
+        {allTabs.map(tabKey => {
+          const config = TAB_CONFIG[tabKey]
           const count = results[tabKey]?.length || 0
+          const hasResults = count > 0
 
           return (
             <button
               key={tabKey}
-              className={`tab-button ${activeTab === tabKey ? 'active' : ''}`}
+              className={`tab-button ${activeTab === tabKey ? 'active' : ''} ${!hasResults ? 'empty' : ''}`}
               onClick={() => setActiveTab(tabKey)}
             >
               {config.icon} {config.label}
-              <span className="tab-count">{count}</span>
+              <span className={`tab-count ${!hasResults ? 'zero' : ''}`}>{count}</span>
             </button>
           )
         })}
       </div>
 
       <div className="results-grid">
-        {currentResults.map((item, index) => (
-          <ResultCard key={`${activeTab}-${index}`} item={item} />
-        ))}
+        {currentResults.length > 0 ? (
+          currentResults.map((item, index) => (
+            <ResultCard key={`${activeTab}-${index}`} item={item} />
+          ))
+        ) : (
+          <div className="no-results-tab">
+            <p>No {TAB_CONFIG[activeTab]?.label} results found for this topic.</p>
+          </div>
+        )}
       </div>
     </div>
   )
