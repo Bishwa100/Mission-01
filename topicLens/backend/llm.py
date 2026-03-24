@@ -33,10 +33,12 @@ Return ONLY a valid JSON object:
   "linkedin_query": "{topic} linkedin profiles and groups",
   "facebook_query": "{topic} facebook groups",
   "instagram_query": "{topic} instagram accounts",
-  "blog_query": "{topic} best blog tutorial",
+  "blog_query": "{topic} best blog tutorial article",
   "reddit_query": "{topic}",
   "events_query": "{topic} workshop webinar",
-  "github_query": "{topic}"
+  "github_query": "{topic}",
+  "twitter_query": "{topic} expert tweets threads",
+  "quora_query": "{topic} questions answers"
 }}"""
     response = call_ollama(prompt, temperature=0.1)
     try:
@@ -46,7 +48,7 @@ Return ONLY a valid JSON object:
         return {k: f"{t} {k.split('_')[0]}" for k in [
             "youtube_query", "linkedin_query", "facebook_query",
             "instagram_query", "blog_query", "reddit_query",
-            "events_query", "github_query"
+            "events_query", "github_query", "twitter_query", "quora_query"
         ]}
 
 

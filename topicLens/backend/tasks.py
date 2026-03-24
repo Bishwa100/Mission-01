@@ -6,6 +6,9 @@ from scrapers.universal_search_scraper import scrape_blogs, scrape_linkedin, scr
 from scrapers.reddit_scraper import scrape_reddit_communities
 from scrapers.eventbrite_scraper import scrape_eventbrite
 from scrapers.github_scraper import scrape_github_repos
+from scrapers.twitter_scraper import scrape_twitter
+from scrapers.quora_scraper import scrape_quora
+from scrapers.blog_scraper import scrape_blog_articles
 from llm import generate_search_queries, generate_deep_insights
 from database import save_results
 
@@ -50,22 +53,30 @@ def scrape_topic_task(self, topic: str, job_id: str):
         # Step 3: Scrape Social platforms via search engine
         self.update_state(
             state="PROGRESS",
-            meta={"step": "Scraping Socials via Search Engine...", "progress": 50}
+            meta={"step": "Scraping Socials via Search Engine...", "progress": 45}
         )
         results["linkedin"] = scrape_linkedin(q.get("linkedin_query", f"{topic} linkedin"))
         results["facebook"] = scrape_facebook(q.get("facebook_query", f"{topic} facebook groups"))
         results["instagram"] = scrape_instagram(q.get("instagram_query", f"{topic} instagram"))
 
-        # Step 4: Scrape Forums & Events
+        # Step 4: Scrape Twitter/X and Quora
         self.update_state(
             state="PROGRESS",
-            meta={"step": "Scraping Forums & Events...", "progress": 70}
+            meta={"step": "Scraping Twitter & Quora...", "progress": 60}
         )
-        results["blogs"] = scrape_blogs(q.get("blog_query", f"{topic} tutorial blog"))
+        results["twitter"] = scrape_twitter(q.get("twitter_query", f"{topic} expert tweets"))
+        results["quora"] = scrape_quora(q.get("quora_query", f"{topic} questions answers"))
+
+        # Step 5: Scrape Forums, Blogs & Events
+        self.update_state(
+            state="PROGRESS",
+            meta={"step": "Scraping Blogs, Forums & Events...", "progress": 75}
+        )
+        results["blogs"] = scrape_blog_articles(q.get("blog_query", f"{topic} tutorial blog"))
         results["reddit"] = scrape_reddit_communities(q.get("reddit_query", topic))
         results["events"] = scrape_eventbrite(q.get("events_query", f"{topic} workshop"))
 
-        # Step 5: Generate deep insights using LLM
+        # Step 6: Generate deep insights using LLM
         self.update_state(
             state="PROGRESS",
             meta={"step": "Local LLM generating deep insights...", "progress": 90}
